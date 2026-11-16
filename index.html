@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ajedrez para Principiantes: recurso educativo para aprender las piezas, reglas y conceptos básicos del ajedrez.">
+  <title>Ajedrez para Principiantes | Maestro Pitágoras II</title>
+  <style>
+    :root {
+      --navy: #101b32;
+      --navy2: #182844;
+      --gold: #e8b94f;
+      --cream: #f7f4ec;
+      --ink: #202a3b;
+      --muted: #687386;
+      --white: #fff;
+      --green: #26734d;
+      --red: #a93d3d;
+      --line: #e4e8ef;
+      --shadow: 0 12px 30px rgba(13, 27, 50, .10);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; background: var(--cream); color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif; line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, var(--navy), #243d62);
+      color: var(--white); padding: 18px 5vw 58px;
+    }
+    .topbar {
+      max-width: 1120px; margin: auto; display: flex;
+      justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .brand { font-weight: 800; letter-spacing: .3px; }
+    .brand span { color: var(--gold); }
+    nav { display: flex; gap: 8px; flex-wrap: wrap; }
+    nav a {
+      color: #f4f6fa; text-decoration: none; padding: 8px 11px;
+      border-radius: 20px; font-size: .92rem;
+    }
+    nav a:hover, nav a:focus { background: rgba(255,255,255,.14); outline: none; }
+    .hero { max-width: 1120px; margin: 52px auto 0; }
+    .eyebrow {
+      display: inline-block; color: var(--gold); font-size: .82rem;
+      font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    }
+    h1 { font-size: clamp(2.2rem, 6vw, 4.4rem); line-height: 1.08; margin: 12px 0; }
+    .hero p { max-width: 650px; color: #e1e8f2; font-size: 1.1rem; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+    .btn {
+      border: 0; border-radius: 10px; padding: 12px 18px; cursor: pointer;
+      font-weight: 700; font-size: .96rem; text-decoration: none; display: inline-block;
+    }
+    .btn-gold { background: var(--gold); color: #1c2637; }
+    .btn-light { background: white; color: var(--navy); }
+    .btn-outline { background: transparent; border: 1px solid #aab7ca; color: var(--navy); }
+    .btn:hover { filter: brightness(.96); transform: translateY(-1px); }
+    main { max-width: 1120px; margin: -26px auto 0; padding: 0 5vw 60px; }
+    section { scroll-margin-top: 20px; margin: 30px 0; }
+    .intro-card, .panel, .piece-card {
+      background: white; border: 1px solid var(--line); border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+    .intro-card { padding: 22px 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .intro-card h2, .section-heading h2 { color: var(--navy); margin: 0 0 8px; }
+    .small-label { color: var(--green); font-weight: 800; font-size: .78rem; text-transform: uppercase; letter-spacing: 1px; }
+    .section-heading { margin: 36px 0 18px; }
+    .section-heading p { color: var(--muted); margin: 4px 0 0; }
+    .piece-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+    .piece-card { padding: 18px; box-shadow: none; }
+    .piece-symbol { font-size: 2.6rem; line-height: 1; margin-bottom: 8px; }
+    .piece-card h3 { margin: 4px 0; color: var(--navy); }
+    .piece-card p { margin: 5px 0 0; color: var(--muted); font-size: .94rem; }
+    .rules-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; }
+    .rule {
+      background: white; border: 1px solid var(--line); border-radius: 12px;
+      padding: 16px; display: flex; gap: 12px; align-items: flex-start;
+    }
+    .rule b { color: var(--navy); display: block; }
+    .rule-icon { font-size: 1.35rem; }
+    .practice-layout { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(240px, .8fr); gap: 20px; align-items: start; }
+    .panel { padding: 18px; }
+    .board {
+      display: grid; grid-template-columns: repeat(8, 1fr); width: 100%;
+      max-width: 480px; margin: 12px auto; border: 5px solid var(--navy);
+      border-radius: 5px; overflow: hidden; aspect-ratio: 1;
+    }
+    .square {
+      border: 0; display: grid; place-items: center; aspect-ratio: 1;
+      font-size: clamp(1.35rem, 5vw, 2.7rem); cursor: pointer; padding: 0;
+      font-family: "Segoe UI Symbol", "DejaVu Sans", serif;
+    }
+    .light { background: #f0d9b5; }
+    .dark { background: #b58863; }
+    .square.selected { outline: 4px solid #f2c94c; outline-offset: -4px; }
+    .square:focus-visible { outline: 4px solid #1976d2; outline-offset: -4px; }
+    .board-note { text-align: center; color: var(--muted); font-size: .86rem; }
+    .info-box { background: #f5f7fb; border-radius: 12px; padding: 16px; min-height: 130px; }
+    .info-box h3 { margin: 0 0 6px; color: var(--navy); }
+    .info-box p { margin: 0; }
+    .quiz-question { border-bottom: 1px solid var(--line); padding: 14px 0; }
+    .quiz-question:last-child { border-bottom: 0; }
+    .quiz-question p { margin: 0 0 8px; font-weight: 700; }
+    .quiz-question label { display: block; padding: 5px 0; cursor: pointer; }
+    .quiz-question input { margin-right: 7px; accent-color: var(--green); }
+    #quiz-result { margin-top: 14px; font-weight: 700; }
+    footer { background: var(--navy); color: #e1e8f2; padding: 25px 5vw; text-align: center; }
+    footer strong { color: var(--gold); }
+    .muted { color: var(--muted); }
+    @media (max-width: 720px) {
+      .intro-card, .practice-layout { grid-template-columns: 1fr; }
+      .piece-grid { grid-template-columns: repeat(2, 1fr); }
+      .rules-grid { grid-template-columns: 1fr; }
+      .hero { margin-top: 36px; }
+      nav { gap: 2px; }
+      nav a { font-size: .84rem; padding: 7px 8px; }
+    }
+    @media (max-width: 390px) { .piece-grid { grid-template-columns: 1fr; } }
+  
+    .game-panel { background: white; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 18px; }
+    .game-layout { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(220px, .7fr); gap: 20px; align-items: start; }
+    .game-board { display: grid; grid-template-columns: repeat(8, 1fr); width: 100%; max-width: 480px; margin: 12px auto; border: 5px solid var(--navy); border-radius: 5px; overflow: hidden; aspect-ratio: 1; }
+    .game-square { border: 0; display: grid; place-items: center; aspect-ratio: 1; padding: 0; font-family: "Segoe UI Symbol", "DejaVu Sans", serif; font-size: clamp(1.25rem, 5vw, 2.7rem); cursor: pointer; position: relative; }
+    .game-square.light { background: #f0d9b5; }
+    .game-square.dark { background: #b58863; }
+    .game-square.selected { box-shadow: inset 0 0 0 4px #f2c94c; }
+    .game-square.legal::after { content: ""; width: 24%; height: 24%; border-radius: 50%; background: rgba(38,115,77,.75); position: absolute; }
+    .game-square.capture::after { content: ""; position: absolute; inset: 5%; border: 4px solid rgba(169,61,61,.8); border-radius: 50%; }
+    .game-square:focus-visible { outline: 4px solid #1976d2; outline-offset: -4px; z-index: 1; }
+    .game-status { background: #f5f7fb; border-radius: 12px; padding: 16px; min-height: 100px; }
+    .game-status strong { color: var(--navy); display: block; margin-bottom: 5px; }
+    .game-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    @media (max-width: 720px) { .game-layout { grid-template-columns: 1fr; } }
+
+  </style>
+</head>
+<body>
+  <header id="inicio">
+    <div class="topbar">
+      <div class="brand">♟ <span>AJEDREZ</span> PARA PRINCIPIANTES</div>
+      <nav aria-label="Navegación principal">
+        <a href="#inicio">Inicio</a>
+        <a href="#piezas">Piezas</a>
+        <a href="#reglas">Reglas</a>
+        <a href="#practicar">Practicar</a>
+        <a href="#jugar">Jugar</a>
+        <a href="#evaluacion">Evaluación</a>
+      </nav>
+    </div>
+    <div class="hero">
+      <span class="eyebrow">Recurso educativo escolar</span>
+      <h1>Aprende ajedrez<br>paso a paso.</h1>
+      <p>Conoce las piezas, comprende las reglas y pon a prueba tus conocimientos con actividades sencillas e interactivas.</p>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="#piezas">Comenzar a aprender</a>
+        <a class="btn btn-light" href="#practicar">Ir al tablero</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro-card" aria-label="Presentación del proyecto">
+      <div>
+        <span class="small-label">Sobre este recurso</span>
+        <h2>Un espacio para aprender</h2>
+        <p>Esta página fue preparada como material educativo de apoyo para los estudiantes de la Unidad Educativa Maestro Pitágoras II. Su objetivo es facilitar el aprendizaje inicial del ajedrez desde un celular o una computadora con conexión a internet.</p>
+      </div>
+      <div>
+        <span class="small-label">¿Qué encontrarás?</span>
+        <h2>Aprendizaje sencillo</h2>
+        <p>Información organizada, explicaciones de las piezas, reglas esenciales, un tablero para identificar movimientos y una pequeña evaluación para repasar lo aprendido.</p>
+      </div>
+    </section>
+
+    <section id="piezas">
+      <div class="section-heading">
+        <span class="small-label">01 · Conoce el juego</span>
+        <h2>Las seis piezas del ajedrez</h2>
+        <p>Cada jugador comienza con 16 piezas: un rey, una dama, dos torres, dos alfiles, dos caballos y ocho peones.</p>
+      </div>
+      <div class="piece-grid">
+        <article class="piece-card"><div class="piece-symbol">♔</div><h3>Rey</h3><p>Se mueve una casilla en cualquier dirección. Es la pieza que debemos proteger.</p></article>
+        <article class="piece-card"><div class="piece-symbol">♕</div><h3>Dama</h3><p>Se mueve en línea recta, en horizontal, vertical o diagonal, tantas casillas como estén libres.</p></article>
+        <article class="piece-card"><div class="piece-symbol">♖</div><h3>Torre</h3><p>Se mueve en horizontal o vertical, tantas casillas como estén libres.</p></article>
+        <article class="piece-card"><div class="piece-symbol">♗</div><h3>Alfil</h3><p>Se mueve en diagonal, tantas casillas como estén libres.</p></article>
+        <article class="piece-card"><div class="piece-symbol">♘</div><h3>Caballo</h3><p>Se mueve en forma de L: dos casillas en una dirección y una hacia un lado. Puede saltar piezas.</p></article>
+        <article class="piece-card"><div class="piece-symbol">♙</div><h3>Peón</h3><p>Avanza una casilla hacia adelante. Desde su posición inicial puede avanzar dos; captura en diagonal.</p></article>
+      </div>
+    </section>
+
+    <section id="reglas">
+      <div class="section-heading">
+        <span class="small-label">02 · Reglas esenciales</span>
+        <h2>Reglas básicas del ajedrez</h2>
+        <p>Estas reglas ayudan a comprender cómo se desarrolla una partida.</p>
+      </div>
+      <div class="rules-grid">
+        <div class="rule"><span class="rule-icon">▦</span><div><b>El tablero</b><span class="muted">Tiene 64 casillas organizadas en 8 filas y 8 columnas.</span></div></div>
+        <div class="rule"><span class="rule-icon">👥</span><div><b>Dos jugadores</b><span class="muted">Uno juega con las piezas blancas y el otro con las negras.</span></div></div>
+        <div class="rule"><span class="rule-icon">♙</span><div><b>Comienza el blanco</b><span class="muted">El jugador de las piezas blancas realiza el primer movimiento.</span></div></div>
+        <div class="rule"><span class="rule-icon">↔</span><div><b>Turnos</b><span class="muted">Los jugadores mueven una pieza por turno, respetando sus movimientos.</span></div></div>
+        <div class="rule"><span class="rule-icon">!</span><div><b>Jaque</b><span class="muted">El rey está amenazado y el jugador debe responder a esa amenaza.</span></div></div>
+        <div class="rule"><span class="rule-icon">♚</span><div><b>Jaque mate</b><span class="muted">El rey está en jaque y no existe ninguna jugada legal para evitarlo. La partida termina.</span></div></div>
+      </div>
+    </section>
+
+    <section id="practicar">
+      <div class="section-heading">
+        <span class="small-label">03 · Actividad interactiva</span>
+        <h2>Practica identificando las piezas</h2>
+        <p>Selecciona una pieza del tablero para conocer su nombre y cómo se mueve.</p>
+      </div>
+      <div class="practice-layout">
+        <div class="panel">
+          <div class="board" id="board" aria-label="Tablero didáctico de ajedrez"></div>
+          <p class="board-note">Posición inicial. Este tablero sirve para identificar piezas; no es una partida completa.</p>
+          <div style="text-align:center"><button class="btn btn-outline" id="reset-board" type="button">Restablecer tablero</button></div>
+        </div>
+        <div class="panel">
+          <div class="info-box" aria-live="polite">
+            <h3 id="piece-title">Elige una pieza</h3>
+            <p id="piece-description">Toca o haz clic sobre cualquiera de las piezas del tablero para ver su explicación.</p>
+          </div>
+          <p class="muted" style="font-size:.9rem;margin-top:14px">Consejo: observa las diferencias entre los movimientos de la torre, el alfil, la dama y el caballo.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="jugar">
+      <div class="section-heading">
+        <span class="small-label">04 · Ponlo en práctica</span>
+        <h2>¡Juega una partida de ajedrez!</h2>
+        <p>Dos estudiantes pueden jugar en el mismo dispositivo. Las blancas comienzan y luego juegan las negras por turnos.</p>
+      </div>
+      <div class="game-panel">
+        <div class="game-layout">
+          <div>
+            <div class="game-board" id="play-board" aria-label="Tablero para jugar ajedrez"></div>
+            <p class="board-note">Toca una pieza de tu color y después una casilla marcada para moverla.</p>
+          </div>
+          <div>
+            <div class="game-status" aria-live="polite">
+              <strong id="game-turn">Turno: blancas</strong>
+              <span id="game-message">Selecciona una pieza blanca para comenzar.</span>
+            </div>
+            <div class="game-buttons">
+              <button class="btn btn-gold" id="new-game" type="button">Nueva partida</button>
+              <button class="btn btn-outline" id="flip-board" type="button">Girar tablero</button>
+            </div>
+            <p class="muted" style="font-size:.9rem;margin-top:14px">El juego permite movimientos legales, capturas, jaque, jaque mate, enroque, captura al paso y promoción del peón a dama.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="evaluacion">
+      <div class="section-heading">
+        <span class="small-label">05 · Comprueba lo aprendido</span>
+        <h2>Pequeña evaluación</h2>
+        <p>Responde las cinco preguntas y revisa tu resultado.</p>
+      </div>
+      <div class="panel">
+        <form id="quiz-form">
+          <div class="quiz-question">
+            <p>1. ¿Cuál es la pieza que debemos proteger durante la partida?</p>
+            <label><input type="radio" name="q1" value="a"> La torre</label>
+            <label><input type="radio" name="q1" value="b"> El rey</label>
+            <label><input type="radio" name="q1" value="c"> El peón</label>
+          </div>
+          <div class="quiz-question">
+            <p>2. ¿Qué pieza se mueve en forma de L?</p>
+            <label><input type="radio" name="q2" value="a"> El caballo</label>
+            <label><input type="radio" name="q2" value="b"> El alfil</label>
+            <label><input type="radio" name="q2" value="c"> La dama</label>
+          </div>
+          <div class="quiz-question">
+            <p>3. ¿Cuántas casillas tiene el tablero?</p>
+            <label><input type="radio" name="q3" value="a"> 32</label>
+            <label><input type="radio" name="q3" value="b"> 48</label>
+            <label><input type="radio" name="q3" value="c"> 64</label>
+          </div>
+          <div class="quiz-question">
+            <p>4. ¿Qué jugador realiza el primer movimiento?</p>
+            <label><input type="radio" name="q4" value="a"> El de las piezas negras</label>
+            <label><input type="radio" name="q4" value="b"> El de las piezas blancas</label>
+            <label><input type="radio" name="q4" value="c"> Cualquiera de los dos</label>
+          </div>
+          <div class="quiz-question">
+            <p>5. ¿Qué significa jaque mate?</p>
+            <label><input type="radio" name="q5" value="a"> Que el rey está amenazado y no puede escapar legalmente</label>
+            <label><input type="radio" name="q5" value="b"> Que comienza la partida</label>
+            <label><input type="radio" name="q5" value="c"> Que se mueve un peón</label>
+          </div>
+          <button class="btn btn-gold" type="submit">Calificar respuestas</button>
+          <button class="btn btn-outline" type="reset" id="clear-quiz">Volver a intentar</button>
+          <p id="quiz-result" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>AJEDREZ PARA PRINCIPIANTES</strong>
+    <div>Recurso educativo para la Unidad Educativa Maestro Pitágoras II</div>
+    <div>La Guardia · Santa Cruz · Bolivia · Gestión 2026</div>
+  </footer>
+
+  <script>
+    // 1. Datos de la posición inicial: letras mayúsculas = blancas, minúsculas = negras.
+    const initialBoard = [
+      ["♜","♞","♝","♛","♚","♝","♞","♜"],
+      ["♟","♟","♟","♟","♟","♟","♟","♟"],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["♙","♙","♙","♙","♙","♙","♙","♙"],
+      ["♖","♘","♗","♕","♔","♗","♘","♖"]
+    ];
+
+    // 2. Explicaciones que aparecen cuando el estudiante selecciona una pieza.
+    const pieceInfo = {
+      "♔": ["Rey blanco", "Se mueve una casilla en cualquier dirección. Debe mantenerse fuera de las casillas amenazadas."],
+      "♚": ["Rey negro", "Se mueve una casilla en cualquier dirección. Debe mantenerse fuera de las casillas amenazadas."],
+      "♕": ["Dama blanca", "Se mueve en horizontal, vertical y diagonal, siempre que el camino esté libre."],
+      "♛": ["Dama negra", "Se mueve en horizontal, vertical y diagonal, siempre que el camino esté libre."],
+      "♖": ["Torre blanca", "Se mueve en filas y columnas, tantas casillas como estén libres."],
+      "♜": ["Torre negra", "Se mueve en filas y columnas, tantas casillas como estén libres."],
+      "♗": ["Alfil blanco", "Se mueve por las diagonales y permanece en el color de casilla con el que comenzó."],
+      "♝": ["Alfil negro", "Se mueve por las diagonales y permanece en el color de casilla con el que comenzó."],
+      "♘": ["Caballo blanco", "Se mueve en forma de L y puede saltar por encima de otras piezas."],
+      "♞": ["Caballo negro", "Se mueve en forma de L y puede saltar por encima de otras piezas."],
+      "♙": ["Peón blanco", "Avanza hacia adelante; captura una pieza rival en diagonal."],
+      "♟": ["Peón negro", "Avanza hacia adelante; captura una pieza rival en diagonal."]
+    };
+
+    // 3. Dibujar el tablero en la página.
+    const boardElement = document.getElementById("board");
+    function drawBoard() {
+      boardElement.innerHTML = "";
+      initialBoard.forEach((row, rowIndex) => {
+        row.forEach((piece, colIndex) => {
+          const square = document.createElement("button");
+          square.type = "button";
+          square.className = "square " + ((rowIndex + colIndex) % 2 === 0 ? "light" : "dark");
+          square.textContent = piece;
+          square.setAttribute("aria-label", piece ? "Casilla con " + piece : "Casilla vacía");
+          square.addEventListener("click", () => showPiece(piece));
+          boardElement.appendChild(square);
+        });
+      });
+    }
+
+    // 4. Mostrar el nombre y la explicación de la pieza seleccionada.
+    function showPiece(piece) {
+      const title = document.getElementById("piece-title");
+      const description = document.getElementById("piece-description");
+      if (!piece) {
+        title.textContent = "Casilla vacía";
+        description.textContent = "Esta casilla no tiene una pieza en la posición inicial.";
+        return;
+      }
+      title.textContent = pieceInfo[piece][0];
+      description.textContent = pieceInfo[piece][1];
+    }
+
+    // 5. Restablecer el tablero a su posición inicial.
+    document.getElementById("reset-board").addEventListener("click", () => {
+      drawBoard();
+      document.getElementById("piece-title").textContent = "Tablero restablecido";
+      document.getElementById("piece-description").textContent = "Selecciona una pieza para conocer su movimiento.";
+    });
+
+    // 6. Revisar las respuestas y calcular el puntaje.
+    document.getElementById("quiz-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const answers = { q1: "b", q2: "a", q3: "c", q4: "b", q5: "a" };
+      let score = 0;
+      let unanswered = 0;
+      for (const question in answers) {
+        const selected = document.querySelector('input[name="' + question + '"]:checked');
+        if (!selected) unanswered++;
+        else if (selected.value === answers[question]) score++;
+      }
+      const result = document.getElementById("quiz-result");
+      if (unanswered > 0) {
+        result.textContent = "Te falta responder " + unanswered + " pregunta(s). Revisa tus respuestas.";
+        result.style.color = "#a05b13";
+      } else {
+        result.textContent = "Tu resultado es " + score + " de 5 respuestas correctas. " +
+          (score === 5 ? "¡Excelente trabajo!" : "Puedes repasar el contenido e intentarlo nuevamente.");
+        result.style.color = score >= 3 ? "#26734d" : "#a93d3d";
+      }
+    });
+
+    document.getElementById("clear-quiz").addEventListener("click", () => {
+      document.getElementById("quiz-result").textContent = "";
+    });
+
+    // Al cargar la página, dibujar el tablero.
+    drawBoard();
+  </script>
+
+  <script>
+    // Juego local para dos estudiantes, con reglas legales básicas del ajedrez.
+    (() => {
+      const boardEl = document.getElementById("play-board");
+      if (!boardEl) return;
+      const symbols = { K:"♔", Q:"♕", R:"♖", B:"♗", N:"♘", P:"♙", k:"♚", q:"♛", r:"♜", b:"♝", n:"♞", p:"♟" };
+      const initial = [
+        ["r","n","b","q","k","b","n","r"],
+        ["p","p","p","p","p","p","p","p"],
+        [null,null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null,null],
+        ["P","P","P","P","P","P","P","P"],
+        ["R","N","B","Q","K","B","N","R"]
+      ];
+      let board, turn, selected, legal, enPassant, castle, finished, flipped;
+      const copyBoard = b => b.map(row => row.slice());
+      const colorOf = p => !p ? null : (p === p.toUpperCase() ? "w" : "b");
+      const inside = (r,c) => r >= 0 && r < 8 && c >= 0 && c < 8;
+      const same = (a,b) => a[0] === b[0] && a[1] === b[1];
+      const other = c => c === "w" ? "b" : "w";
+      const name = c => c === "w" ? "blancas" : "negras";
+
+      function reset() {
+        board = copyBoard(initial); turn = "w"; selected = null; legal = [];
+        enPassant = null; castle = { wK:true, wQ:true, bK:true, bQ:true };
+        finished = false; flipped = false;
+        render(); status("Turno: blancas", "Selecciona una pieza blanca para comenzar.");
+      }
+      function locateKing(b, color) {
+        const k = color === "w" ? "K" : "k";
+        for (let r=0;r<8;r++) for (let c=0;c<8;c++) if (b[r][c] === k) return [r,c];
+        return null;
+      }
+      function attacked(b, r, c, by) {
+        const pawnDir = by === "w" ? -1 : 1;
+        const pawn = by === "w" ? "P" : "p";
+        for (const dc of [-1,1]) {
+          const rr = r - pawnDir, cc = c - dc;
+          if (inside(rr,cc) && b[rr][cc] === pawn) return true;
+        }
+        const knight = by === "w" ? "N" : "n";
+        for (const [dr,dc] of [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]]) {
+          const rr=r+dr, cc=c+dc;
+          if (inside(rr,cc) && b[rr][cc] === knight) return true;
+        }
+        const king = by === "w" ? "K" : "k";
+        for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) {
+          if ((dr || dc) && inside(r+dr,c+dc) && b[r+dr][c+dc] === king) return true;
+        }
+        const rays = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
+        for (let i=0;i<rays.length;i++) {
+          const [dr,dc]=rays[i]; let rr=r+dr, cc=c+dc, distance=1;
+          while (inside(rr,cc)) {
+            const p=b[rr][cc];
+            if (p) {
+              if (colorOf(p) === by) {
+                const t=p.toUpperCase();
+                if (t === "Q" || (i<4 && t==="R") || (i>=4 && t==="B") || (distance===1 && t==="K")) return true;
+              }
+              break;
+            }
+            rr+=dr; cc+=dc; distance++;
+          }
+        }
+        return false;
+      }
+      function inCheck(b, color) {
+        const k=locateKing(b,color);
+        return k ? attacked(b,k[0],k[1],other(color)) : true;
+      }
+      function pseudoMoves(b, r, c, includeCastle=true) {
+        const p=b[r][c]; if (!p) return [];
+        const color=colorOf(p), type=p.toUpperCase(), moves=[];
+        const add=(rr,cc,extra={}) => {
+          if (!inside(rr,cc)) return;
+          const target=b[rr][cc];
+          if (target && colorOf(target)===color) return;
+          if (target && target.toUpperCase()==="K") return;
+          moves.push({from:[r,c],to:[rr,cc],...extra});
+        };
+        if (type==="P") {
+          const dir=color==="w"?-1:1, start=color==="w"?6:1, last=color==="w"?0:7;
+          if (inside(r+dir,c) && !b[r+dir][c]) {
+            add(r+dir,c,{promotion:r+dir===last});
+            if (r===start && !b[r+2*dir][c]) add(r+2*dir,c,{double:true});
+          }
+          for (const dc of [-1,1]) {
+            const rr=r+dir, cc=c+dc;
+            if (inside(rr,cc) && b[rr][cc] && colorOf(b[rr][cc])!==color) add(rr,cc,{promotion:rr===last});
+            if (enPassant && same(enPassant,[rr,cc])) add(rr,cc,{enPassant:true});
+          }
+        } else if (type==="N") {
+          for (const [dr,dc] of [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]]) add(r+dr,c+dc);
+        } else if (type==="K") {
+          for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) if (dr||dc) add(r+dr,c+dc);
+          if (includeCastle && !inCheck(b,color)) {
+            const row=color==="w"?7:0, enemy=other(color);
+            if (r===row && c===4 && castle[color+"K"] && b[row][5]===null && b[row][6]===null &&
+                b[row][7]===(color==="w"?"R":"r") && !attacked(b,row,5,enemy) && !attacked(b,row,6,enemy))
+              moves.push({from:[r,c],to:[row,6],castle:"K"});
+            if (r===row && c===4 && castle[color+"Q"] && b[row][1]===null && b[row][2]===null && b[row][3]===null &&
+                b[row][0]===(color==="w"?"R":"r") && !attacked(b,row,3,enemy) && !attacked(b,row,2,enemy))
+              moves.push({from:[r,c],to:[row,2],castle:"Q"});
+          }
+        } else {
+          const dirs = type==="R" ? [[-1,0],[1,0],[0,-1],[0,1]] :
+                       type==="B" ? [[-1,-1],[-1,1],[1,-1],[1,1]] :
+                       [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
+          for (const [dr,dc] of dirs) {
+            let rr=r+dr,cc=c+dc;
+            while (inside(rr,cc)) {
+              if (!b[rr][cc]) moves.push({from:[r,c],to:[rr,cc]});
+              else { if (colorOf(b[rr][cc])!==color && b[rr][cc].toUpperCase()!=="K") moves.push({from:[r,c],to:[rr,cc]}); break; }
+              rr+=dr; cc+=dc;
+            }
+          }
+        }
+        return moves;
+      }
+      function applyMove(b, move, rights, ep) {
+        const next=copyBoard(b), [fr,fc]=move.from, [tr,tc]=move.to, piece=next[fr][fc], color=colorOf(piece);
+        next[fr][fc]=null;
+        if (move.enPassant) next[fr][tc]=null;
+        if (move.castle) {
+          const row=fr;
+          if (move.castle==="K") { next[row][5]=next[row][7]; next[row][7]=null; }
+          else { next[row][3]=next[row][0]; next[row][0]=null; }
+        }
+        next[tr][tc]=move.promotion ? (color==="w"?"Q":"q") : piece;
+        const newRights={...rights};
+        if (piece.toUpperCase()==="K") { newRights[color+"K"]=false; newRights[color+"Q"]=false; }
+        if (piece.toUpperCase()==="R") {
+          if (fr===7&&fc===0) newRights.wQ=false; if (fr===7&&fc===7) newRights.wK=false;
+          if (fr===0&&fc===0) newRights.bQ=false; if (fr===0&&fc===7) newRights.bK=false;
+        }
+        const captured=b[tr][tc];
+        if (captured && captured.toUpperCase()==="R") {
+          if (tr===7&&tc===0) newRights.wQ=false; if (tr===7&&tc===7) newRights.wK=false;
+          if (tr===0&&tc===0) newRights.bQ=false; if (tr===0&&tc===7) newRights.bK=false;
+        }
+        const newEp=(piece.toUpperCase()==="P" && Math.abs(tr-fr)===2) ? [(fr+tr)/2,fc] : null;
+        return {board:next,rights:newRights,ep:newEp};
+      }
+      function legalMoves(r,c) {
+        const p=board[r][c]; if (!p || colorOf(p)!==turn) return [];
+        return pseudoMoves(board,r,c).filter(m => {
+          const result=applyMove(board,m,castle,enPassant);
+          return !inCheck(result.board,turn);
+        });
+      }
+      function allLegal(color) {
+        const old=turn; turn=color; const all=[];
+        for(let r=0;r<8;r++) for(let c=0;c<8;c++) if(colorOf(board[r][c])===color) all.push(...legalMoves(r,c));
+        turn=old; return all;
+      }
+      function status(title,message) {
+        document.getElementById("game-turn").textContent=title;
+        document.getElementById("game-message").textContent=message;
+      }
+      function render() {
+        boardEl.innerHTML="";
+        for(let vr=0;vr<8;vr++) for(let vc=0;vc<8;vc++) {
+          const r=flipped?7-vr:vr, c=flipped?7-vc:vc, sq=document.createElement("button");
+          sq.type="button"; sq.className="game-square "+((r+c)%2===0?"light":"dark");
+          const piece=board[r][c]; sq.textContent=piece?symbols[piece]:"";
+          sq.setAttribute("aria-label",piece ? (colorOf(piece)==="w"?"Blanca ":"Negra ")+piece.toUpperCase() : "Casilla vacía");
+          if(selected && same(selected,[r,c])) sq.classList.add("selected");
+          const target=legal.find(m=>same(m.to,[r,c]));
+          if(target) sq.classList.add(board[r][c]?"capture":"legal");
+          sq.addEventListener("click",()=>clickSquare(r,c));
+          boardEl.appendChild(sq);
+        }
+      }
+      function clickSquare(r,c) {
+        if(finished) return;
+        const p=board[r][c];
+        if(selected) {
+          const move=legal.find(m=>same(m.to,[r,c]));
+          if(move) { makeMove(move); return; }
+        }
+        if(p && colorOf(p)===turn) {
+          selected=[r,c]; legal=legalMoves(r,c); render();
+          status("Turno: "+name(turn),"Pieza seleccionada. Elige una casilla marcada para moverla.");
+        } else {
+          selected=null; legal=[]; render();
+          status("Turno: "+name(turn),"Selecciona una pieza de las "+name(turn)+".");
+        }
+      }
+      function makeMove(move) {
+        const result=applyMove(board,move,castle,enPassant);
+        board=result.board; castle=result.rights; enPassant=result.ep;
+        selected=null; legal=[]; turn=other(turn);
+        const check=inCheck(board,turn), remaining=allLegal(turn);
+        render();
+        if(remaining.length===0) {
+          finished=true;
+          if(check) status("¡Jaque mate!", "Ganan las "+name(other(turn))+". Pulsa «Nueva partida» para volver a jugar.");
+          else status("Tablas", "La partida terminó en empate por ahogado. Pulsa «Nueva partida» para jugar otra vez.");
+        } else if(check) status("Turno: "+name(turn), "¡Jaque! El rey de las "+name(turn)+" está amenazado.");
+        else status("Turno: "+name(turn), "Movimiento realizado. Ahora juegan las "+name(turn)+".");
+      }
+      document.getElementById("new-game").addEventListener("click",reset);
+      document.getElementById("flip-board").addEventListener("click",()=>{flipped=!flipped;render();});
+      reset();
+    })();
+  </script>
+
+</body>
+</html>
